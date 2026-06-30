@@ -26,27 +26,27 @@ API.interceptors.response.use(
 
 
 export const sendPrompt = async (prompt, sessionId, mode = "generate") => {
-  const { data } = await API.post("/chat", { prompt, sessionId, mode });
+  const { data } = await API.post("/api/chat", { prompt, sessionId, mode });
   return data;
 };
 
 export const getSessions = async () => {
-  const { data } = await API.get("/chat/sessions");
+  const { data } = await API.get("/api/chat/sessions");
   return data;
 };
 
 export const getHistory = async (sessionId) => {
-  const { data } = await API.get(`/chat/history/${sessionId}`);
+  const { data } = await API.get(`/api/chat/history/${sessionId}`);
   return data;
 };
 
 export const deleteSession = async (sessionId) => {
-  const { data } = await API.delete(`/chat/history/${sessionId}`);
+  const { data } = await API.delete(`/api/chat/history/${sessionId}`);
   return data;
 };
 
 export const getQuota = async () => {
-  const { data } = await API.get("/chat/quota");
+  const { data } = await API.get("/api/chat/quota");
   return data;
 };
 

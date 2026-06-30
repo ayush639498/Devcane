@@ -13,27 +13,27 @@ const API = axios.create({
 });
 
 export const register = async (userData) => {
-  const { data } = await API.post("/auth/register", userData);
+  const { data } = await API.post("/api/auth/register", userData);
   return data;
 };
 
 export const login = async (userData) => {
-  const { data } = await API.post("/auth/login", userData);
+  const { data } = await API.post("/api/auth/login", userData);
   return data;
 };
 
 export const logout = async () => {
-  const { data } = await API.get("/auth/logout");
+  const { data } = await API.get("/api/auth/logout");
   return data;
 };
 
 export const getMe = async () => {
-  const { data } = await API.get("/auth/get-me");
+  const { data } = await API.get("/api/auth/get-me");
   return data;
 };
 
 export const forgotPassword = async (email) => {
-  const { data } = await API.post("/auth/forgot-password", {
+  const { data } = await API.post("/api/auth/forgot-password", {
     email,
   });
 
@@ -42,7 +42,7 @@ export const forgotPassword = async (email) => {
 
 export const resetPassword = async (token, password) => {
   const { data } = await API.post(
-    `/auth/reset-password/${token}`,
+    `/api/auth/reset-password/${token}`,
     { password }
   );
 
@@ -50,7 +50,7 @@ export const resetPassword = async (token, password) => {
 };
 
 export const updateProfile = async (payload) => {
-  const { data } = await API.patch("/auth/profile", payload);
+  const { data } = await API.patch("/api/auth/profile", payload);
   return data;
 };
 
