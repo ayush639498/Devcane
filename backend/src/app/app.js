@@ -19,7 +19,7 @@ app.use(helmet());
 
 app.use(
   cors({
-    origin: "https://devcane.vercel.app/",
+    origin: "https://devcane.vercel.app",
     credentials: true,
   })
 );
