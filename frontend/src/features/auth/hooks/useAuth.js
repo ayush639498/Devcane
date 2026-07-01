@@ -7,9 +7,9 @@ import {
   forgotPassword,
   resetPassword,
   updateProfile,
+  googleLogin,
+  googleRegister,
 } from "../services/auth.api";
-
-const API_URL = import.meta.env.VITE_API_URL;
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -18,13 +18,22 @@ export const useAuth = () => {
     throw new Error("useAuth must be used inside AuthProvider");
   }
 
-  const { user, setUser, loading, setLoading, logout: clearUser } = context;
+  const {
+    user,
+    setUser,
+    loading,
+    setLoading,
+    logout: clearUser,
+  } = context;
 
   const handleLogin = async ({ email, password }) => {
     try {
       setLoading(true);
 
-      const data = await login({ email, password });
+      const data = await login({
+        email,
+        password,
+      });
 
       if (data.success) {
         setUser(data.user);
@@ -60,24 +69,28 @@ export const useAuth = () => {
     try {
       setLoading(true);
 
-      await logout();
+      const data = await logout();
+
       clearUser();
+
+      return data;
     } finally {
       setLoading(false);
     }
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = `${API_URL}/api/auth/google/login`;
+    googleLogin();
   };
 
   const handleGoogleRegister = () => {
-    window.location.href = `${API_URL}/api/auth/google/register`;
+    googleRegister();
   };
 
   const handleForgotPassword = async (email) => {
     try {
       setLoading(true);
+
       return await forgotPassword(email);
     } finally {
       setLoading(false);
@@ -87,6 +100,7 @@ export const useAuth = () => {
   const handleResetPassword = async (token, password) => {
     try {
       setLoading(true);
+
       return await resetPassword(token, password);
     } finally {
       setLoading(false);

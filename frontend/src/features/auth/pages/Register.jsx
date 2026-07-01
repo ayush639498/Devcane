@@ -3,14 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
 import { ClipLoader } from "react-spinners";
-import { BsStars } from "react-icons/bs";
+import { toast } from "react-toastify";
 import { useAuth } from "../hooks/useAuth";
-
 
 const Register = () => {
   const {
     handleRegister,
-    handleGoogleLogin,
     handleGoogleRegister,
     loading,
   } = useAuth();
@@ -18,6 +16,7 @@ const Register = () => {
   const navigate = useNavigate();
 
   const [show, setShow] = useState(false);
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,14 +25,21 @@ const Register = () => {
     e.preventDefault();
 
     try {
-      await handleRegister({
-        name,
-        email,
+      const data = await handleRegister({
+        name: name.trim(),
+        email: email.trim(),
         password,
       });
 
-      navigate("/dashboard");
-    } catch (err) {}
+      if (data.success) {
+        toast.success(data.message || "Registration successful");
+        navigate("/dashboard", { replace: true });
+      } else {
+        toast.error(data.message || "Registration failed");
+      }
+    } catch (err) {
+      toast.error(err?.message || "Registration failed");
+    }
   };
 
   return (
@@ -47,9 +53,7 @@ const Register = () => {
 
       <div className="relative z-10 w-full max-w-[900px] flex flex-col md:flex-row rounded-3xl overflow-hidden border border-[#1a2d4a] shadow-2xl shadow-black/60 bg-[#060d1a]">
 
-        
         <div className="flex-1 flex flex-col justify-center px-8 py-10 sm:px-12 bg-[#060d1a]">
-
 
           <div className="mb-8">
             <h1 className="text-2xl font-black text-white">
@@ -71,6 +75,7 @@ const Register = () => {
               <input
                 type="text"
                 required
+                autoComplete="name"
                 placeholder="John Doe"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -86,6 +91,7 @@ const Register = () => {
               <input
                 type="email"
                 required
+                autoComplete="email"
                 placeholder="you@company.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -99,10 +105,11 @@ const Register = () => {
               </label>
 
               <div className="relative">
-
                 <input
                   type={show ? "text" : "password"}
                   required
+                  autoComplete="new-password"
+                  minLength={8}
                   placeholder="Minimum 8 characters"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -111,8 +118,8 @@ const Register = () => {
 
                 <button
                   type="button"
-                  onClick={() => setShow(!show)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white"
+                  onClick={() => setShow((prev) => !prev)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition"
                 >
                   {show ? (
                     <AiOutlineEye size={18} />
@@ -120,10 +127,10 @@ const Register = () => {
                     <AiOutlineEyeInvisible size={18} />
                   )}
                 </button>
-
               </div>
             </div>
-                        <button
+
+            <button
               type="submit"
               disabled={loading}
               className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#f59e0b] to-[#d97706] hover:from-[#d97706] hover:to-[#b45309] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-sm transition-all hover:shadow-lg hover:shadow-[#f59e0b]/20 flex items-center justify-center"
@@ -152,7 +159,8 @@ const Register = () => {
           <button
             type="button"
             onClick={handleGoogleRegister}
-            className="w-full flex items-center justify-center gap-3 py-3 rounded-xl bg-white hover:bg-slate-100 transition-all duration-300 font-bold text-slate-900 text-sm shadow-md hover:shadow-lg active:scale-[0.98]"
+            disabled={loading}
+            className="w-full flex items-center justify-center gap-3 py-3 rounded-xl bg-white hover:bg-slate-100 disabled:opacity-50 transition-all duration-300 font-bold text-slate-900 text-sm shadow-md hover:shadow-lg active:scale-[0.98]"
           >
             <FcGoogle size={20} />
             Continue with Google
@@ -176,7 +184,6 @@ const Register = () => {
 
           <div>
 
-
             <h2 className="text-2xl font-black text-white leading-tight mb-3">
               Ship code like a
               <br />
@@ -189,7 +196,6 @@ const Register = () => {
             </p>
 
             <div className="space-y-3">
-
               {[
                 "Free to start",
                 "Google Sign-In supported",
@@ -208,7 +214,6 @@ const Register = () => {
                   </span>
                 </div>
               ))}
-
             </div>
 
           </div>

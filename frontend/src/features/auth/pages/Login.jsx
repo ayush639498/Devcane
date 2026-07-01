@@ -4,15 +4,10 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
 import { ClipLoader } from "react-spinners";
 import { useAuth } from "../hooks/useAuth";
-import { BsStars } from "react-icons/bs";
-
+import { toast } from "react-toastify";
 
 const Login = () => {
-  const {
-    handleLogin,
-    handleGoogleLogin,
-    loading,
-  } = useAuth();
+  const { handleLogin, handleGoogleLogin, loading } = useAuth();
 
   const navigate = useNavigate();
 
@@ -24,19 +19,24 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      await handleLogin({
-        email,
+      const data = await handleLogin({
+        email: email.trim(),
         password,
       });
 
-      navigate("/dashboard");
-    } catch (err) {}
+      if (data.success) {
+        toast.success(data.message || "Login successful");
+        navigate("/dashboard", { replace: true });
+      } else {
+        toast.error(data.message || "Login failed");
+      }
+    } catch (err) {
+      toast.error(err?.message || "Login failed");
+    }
   };
 
   return (
     <div className="min-h-screen bg-[#03070f] flex items-center justify-center px-4 py-12 relative overflow-hidden">
-
-    
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-[#22c55e]/5 blur-[120px] rounded-full" />
         <div className="absolute bottom-0 right-0 w-[400px] h-[300px] bg-[#f59e0b]/4 blur-[100px] rounded-full" />
@@ -44,20 +44,17 @@ const Login = () => {
       </div>
 
       <div className="relative z-10 w-full max-w-[900px] flex flex-col md:flex-row rounded-3xl overflow-hidden border border-[#1a2d4a] shadow-2xl shadow-black/60 bg-[#060d1a]">
-
-    
         <div className="hidden md:flex w-[45%] flex-col justify-between p-10 bg-gradient-to-br from-[#0a1f14] via-[#060d1a] to-[#03070f] border-r border-[#1a2d4a]">
-
           <Link to="/" className="flex items-center gap-2.5">
-       
             <span className="text-2xl font-bold text-white">
-             Dev<span className="bg-gradient-to-r from-blue-400 to-blue-700 bg-clip-text text-transparent">cane</span>
+              Dev
+              <span className="bg-gradient-to-r from-blue-400 to-blue-700 bg-clip-text text-transparent">
+                cane
+              </span>
             </span>
           </Link>
 
           <div>
-         
-
             <h2 className="text-2xl font-black text-white leading-tight mb-3">
               AI coding
               <br />
@@ -80,23 +77,17 @@ const Login = () => {
                     <div className="h-1.5 w-1.5 rounded-full bg-[#22c55e]" />
                   </div>
 
-                  <span className="text-slate-400 text-sm">
-                    {item}
-                  </span>
+                  <span className="text-slate-400 text-sm">{item}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <p className="text-slate-700 text-xs">
-            © 2026 Devcane
-          </p>
+          <p className="text-slate-700 text-xs">© 2026 Devcane</p>
         </div>
 
         <div className="flex-1 flex flex-col justify-center px-8 py-10 sm:px-12 bg-[#060d1a]">
-
           <div className="mb-8">
-
             <h1 className="text-2xl font-black text-white">
               Welcome back
             </h1>
@@ -104,11 +95,9 @@ const Login = () => {
             <p className="text-slate-500 text-sm mt-1">
               Sign in to continue to Devcane
             </p>
-
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-
             <div>
               <label className="text-xs font-semibold text-slate-500 mb-1.5 block uppercase tracking-wider">
                 Email
@@ -117,6 +106,7 @@ const Login = () => {
               <input
                 type="email"
                 required
+                autoComplete="email"
                 placeholder="you@company.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -125,16 +115,15 @@ const Login = () => {
             </div>
 
             <div>
-
               <label className="text-xs font-semibold text-slate-500 mb-1.5 block uppercase tracking-wider">
                 Password
               </label>
 
               <div className="relative">
-
                 <input
                   type={show ? "text" : "password"}
                   required
+                  autoComplete="current-password"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -143,7 +132,7 @@ const Login = () => {
 
                 <button
                   type="button"
-                  onClick={() => setShow(!show)}
+                  onClick={() => setShow((prev) => !prev)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition"
                 >
                   {show ? (
@@ -152,12 +141,10 @@ const Login = () => {
                     <AiOutlineEyeInvisible size={18} />
                   )}
                 </button>
-
               </div>
-
             </div>
 
-                        <div className="flex justify-end">
+            <div className="flex justify-end">
               <Link
                 to="/forgot-password"
                 className="text-xs text-slate-500 hover:text-[#22c55e] transition-colors"
@@ -174,10 +161,9 @@ const Login = () => {
               {loading ? (
                 <ClipLoader size={18} color="#fff" />
               ) : (
-                "Sign In "
+                "Sign In"
               )}
             </button>
-
           </form>
 
           <div className="relative my-7">
@@ -195,7 +181,8 @@ const Login = () => {
           <button
             type="button"
             onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center gap-3 py-3 rounded-xl bg-white hover:bg-slate-100 transition-all duration-300 font-bold text-slate-900 text-sm shadow-md hover:shadow-lg active:scale-[0.98]"
+            disabled={loading}
+            className="w-full flex items-center justify-center gap-3 py-3 rounded-xl bg-white hover:bg-slate-100 disabled:opacity-50 transition-all duration-300 font-bold text-slate-900 text-sm shadow-md hover:shadow-lg active:scale-[0.98]"
           >
             <FcGoogle size={20} />
             Continue with Google
@@ -210,7 +197,6 @@ const Login = () => {
               Create one free
             </Link>
           </p>
-
         </div>
       </div>
     </div>

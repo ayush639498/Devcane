@@ -11,6 +11,19 @@ const API = axios.create({
   },
 });
 
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (!error.response) {
+      return Promise.reject({
+        success: false,
+        message: "Network error. Please check your internet connection.",
+      });
+    }
+
+    return Promise.reject(error.response.data);
+  }
+);
 
 export const register = async (userData) => {
   const { data } = await API.post("/api/auth/register", userData);
@@ -31,7 +44,6 @@ export const getMe = async () => {
   const { data } = await API.get("/api/auth/get-me");
   return data;
 };
-
 
 export const forgotPassword = async (email) => {
   const { data } = await API.post("/api/auth/forgot-password", {
@@ -62,24 +74,5 @@ export const googleLogin = () => {
 export const googleRegister = () => {
   window.location.href = `${BASE_URL}/api/auth/google/register`;
 };
-
-
-API.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (!error.response) {
-      return Promise.reject({
-        success: false,
-        message: "Network error. Please try again.",
-      });
-    }
-
-    if (error.response.status === 401) {
-      console.warn("Unauthorized");
-    }
-
-    return Promise.reject(error.response.data);
-  }
-);
 
 export default API;
